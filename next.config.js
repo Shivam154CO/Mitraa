@@ -25,6 +25,17 @@ const nextConfig = withPWA({
     dangerouslyAllowSVG: true,
     unoptimized: true,
   },
+  
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb', 
+    },
+    responseLimit: '50mb',
+  },
+  
+  serverRuntimeConfig: {
+    maxBodySize: '50mb',
+  },
 });
 
-module.exports = nextConfig
+module.exports = nextConfig;
