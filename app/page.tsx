@@ -5,6 +5,7 @@ import CreateRoomButton from "@/components/CreateRoomButton"
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
+
 export const metadata: Metadata = {
   title: 'Mitraa - Share anything instantly',
   description: 'Easily share files, text, or notes with anyone instantly and securely. No login required. Created by Shivam Pawar.',
