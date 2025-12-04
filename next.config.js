@@ -7,7 +7,6 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development',
 });
 
-
 const nextConfig = withPWA({
   eslint: {
     ignoreDuringBuilds: true,
@@ -26,16 +25,15 @@ const nextConfig = withPWA({
     unoptimized: true,
   },
   
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb', 
-    },
-    responseLimit: '50mb',
+  experimental: {
+    serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
   },
   
   serverRuntimeConfig: {
-    maxBodySize: '50mb',
+    bodySizeLimit: '50mb',
   },
+  
+  staticPageGenerationTimeout: 120,
 });
 
 module.exports = nextConfig;
