@@ -341,7 +341,7 @@ furnished to do so, subject to the following conditions:
 
 <div align="center">
 
-### **Shivam Singh**
+### **Shivam Pawar**
 #### 🚀 Full Stack Developer | Open Source Enthusiast
 
 [![Portfolio](https://img.shields.io/badge/🌐_Portfolio-shivam154co.github.io-blue?style=for-the-badge)](https://shivam154co.github.io)
