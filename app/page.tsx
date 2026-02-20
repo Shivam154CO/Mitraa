@@ -4,8 +4,8 @@ import { motion } from "framer-motion"
 import CreateRoomButton from "@/components/CreateRoomButton"
 import NearbyRooms from "@/components/NearbyRooms"
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
-
+import { Shield, Zap, Lock, ArrowRight, Share2, Clock, Smartphone, Globe, CheckCircle2, Send, MousePointer2 } from "lucide-react"
+import Image from "next/image"
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -28,405 +28,268 @@ export default function HomePage() {
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
-  const installApp = async () => {
-    if (!deferredPrompt) return
-
-    try {
-      deferredPrompt.prompt()
-      const choiceResult = await deferredPrompt.userChoice
-
-      if (choiceResult.outcome === 'accepted') {
-        console.log('App installed')
-      } else {
-        console.log('App install dismissed')
-      }
-    } catch (error) {
-      console.error('Error installing app:', error)
-    } finally {
-      setDeferredPrompt(null)
-      setShowInstall(false)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-cyan-50 to-blue-50 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-0 -right-20 w-96 h-96 bg-gradient-to-br from-sky-200/30 to-cyan-200/30 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, -90, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -bottom-20 -left-20 w-96 h-96 bg-gradient-to-br from-blue-200/30 to-sky-200/30 rounded-full blur-3xl"
-        />
+    <div className="min-h-screen bg-brand-dark text-white selection:bg-brand-orange selection:text-black font-inter">
+      {/* Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-brand-orange/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-[20%] -left-[10%] w-[70%] h-[70%] bg-brand-amber/5 rounded-full blur-[150px]" />
       </div>
 
-      <nav className="relative w-full px-6 py-6">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-4"
+      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-brand-dark/60 backdrop-blur-xl font-outfit">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="relative group">
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.8, type: "spring" }}
-                className="absolute -inset-2 bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 rounded-full opacity-20 blur"
-              />
-
-              <div className="relative w-14 h-14 bg-gradient-to-br from-sky-500 via-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-sky-500/30 overflow-hidden">
-                <div className="relative w-10 h-10">
-                  <Image
-                    src="/favicon.png"
-                    alt="Mitraa Logo"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-
-                <motion.div
-                  animate={{
-                    y: [0, -3, 0],
-                    x: [0, 2, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute top-1 right-3 w-1.5 h-1.5 bg-white rounded-full"
-                />
-                <motion.div
-                  animate={{
-                    y: [0, 3, 0],
-                    x: [0, -2, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5
-                  }}
-                  className="absolute bottom-1 left-3 w-1 h-1 bg-white/80 rounded-full"
-                />
-              </div>
-
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent rounded-2xl" />
+            <div className="w-14 h-14 relative group-hover:rotate-12 transition-transform duration-500">
+              <Image src="/favicon.png" alt="Mitraa Logo" fill className="object-contain" />
             </div>
+            <span className="text-xl font-bold tracking-tight text-white">Mitraa</span>
+          </div>
 
-            <div className="relative">
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-col"
-              >
-                <h1 className="text-3xl font-bold tracking-tight">
-                  <span className="bg-gradient-to-r from-sky-700 via-cyan-600 to-blue-700 bg-clip-text text-transparent">
-                    Mitraa
-                  </span>
-                  <motion.span
-                    animate={{ opacity: [0.3, 0.8, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-sky-500 ml-0.5"
-                  >
-                    .
-                  </motion.span>
-                </h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <div className="w-4 h-px bg-gradient-to-r from-sky-400 to-cyan-400" />
-                  <p className="text-xs font-medium text-sky-600/90 tracking-[0.2em]">
-                    Transfer Files Seamlessly
-                  </p>
-                  <div className="w-4 h-px bg-gradient-to-r from-cyan-400 to-blue-400" />
-                </div>
-              </motion.div>
+          <div className="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-widest text-white/40">
+            <a href="#features" className="hover:text-brand-orange transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-brand-orange transition-colors">How it works</a>
+            <a href="#nearby" className="hover:text-brand-orange transition-colors">Browse Rooms</a>
+          </div>
 
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
-                className="h-[1px] bg-gradient-to-r from-transparent via-sky-400 to-transparent mt-2"
-              />
-            </div>
-          </motion.div>
-
+          <button
+            onClick={() => document.getElementById('app-main')?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-brand-orange hover:text-black hover:border-brand-orange transition-all duration-300"
+          >
+            Launch app
+          </button>
         </div>
       </nav>
 
-      {showInstall && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={installApp}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-sky-500 to-cyan-500 text-white px-6 py-3 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-medium z-50"
-        >
-          📱 Install App
-        </motion.button>
-      )}
-
-      <main className="relative max-w-6xl mx-auto px-6 pt-20 pb-16">
-        <div className="text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="relative pt-48 pb-20 px-6 overflow-hidden">
+          <div className="max-w-7xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full mb-8 shadow-sm"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-gray-700">Free • No Signup • Instant</span>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-orange text-[10px] font-black uppercase tracking-[0.2em] mb-8 font-outfit">
+                Free • No Signup • Instant
+              </div>
+
+              <h1 className="text-6xl md:text-8xl font-outfit font-black mb-8 leading-[1.1] tracking-tight text-white uppercase">
+                Drop files,<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-brand-amber to-orange-400">Share Instantly.</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed font-sans">
+                Create a temporary room to shared files, text, and links. No account needed. Just drop your stuff and share the link.
+              </p>
+
+              <div id="app-main" className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24 scroll-mt-32 font-outfit">
+                <CreateRoomButton />
+              </div>
             </motion.div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-                Drop Files,
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
-                Share Instantly
-              </span>
-            </h1>
-
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-12 leading-relaxed">
-              Create temporary rooms to share files, text, and links.
-              <br />
-              <span className="font-semibold text-sky-600">No account needed. Just drop and go.</span>
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mb-20"
-          >
-            <div className="inline-block">
-              <CreateRoomButton />
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-        >
-          <NearbyRooms />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-24"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {[
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                ),
-                title: "No Registration",
-                description: "Drop files without any signup"
-              },
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                ),
-                title: "24h Auto-Delete ",
-                description: "Rooms & files vanish after 24 hours"
-              },
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                ),
-                title: "Instant Share",
-                description: "Copy link & share immediately"
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
-                className="flex flex-col items-center text-center p-6 bg-white/70 backdrop-blur-sm rounded-2xl hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl"
-              >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-cyan-100 flex items-center justify-center mb-4">
-                  <div className="text-sky-600">
-                    {feature.icon}
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="flex justify-center">
+            {/* How It Works Section */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              id="how-it-works"
+              initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
-              className="w-full max-w-md flex flex-col items-center text-center p-6 bg-white/70 backdrop-blur-sm rounded-2xl hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl"
+              transition={{ duration: 1, delay: 0.2 }}
+              className="relative max-w-5xl mx-auto scroll-mt-32"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-cyan-100 flex items-center justify-center mb-4">
-                <div className="text-sky-600">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+              <div className="mb-16 text-center font-outfit">
+                <p className="text-xs font-bold text-brand-orange uppercase tracking-[0.4em] mb-4 text-white">Simple Steps</p>
+                <h2 className="text-4xl font-black uppercase mb-12 text-white">How It Works</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto text-left text-white/60">
+                  {[
+                    { step: '01', title: 'Create Room', desc: 'Click the button to start a private room instantly.' },
+                    { step: '02', title: 'Drop Files', desc: 'Drop your files, text, or links into the room.' },
+                    { step: '03', title: 'Share Link', desc: 'Copy the room link and send it to your friends.' }
+                  ].map((s, i) => (
+                    <div key={i} className="space-y-3">
+                      <span className="text-brand-orange font-black text-2xl opacity-50">{s.step}</span>
+                      <h3 className="font-bold text-white text-lg">{s.title}</h3>
+                      <p className="text-sm leading-relaxed font-sans">{s.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Create Rooms</h3>
-              <p className="text-gray-600 text-sm">One-click room generation</p>
+
+              <div className="absolute -inset-1 bg-gradient-to-r from-brand-orange/30 to-blue-500/30 rounded-[2.5rem] blur-2xl opacity-50" />
+              <div className="relative bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] p-3 shadow-2xl overflow-hidden">
+                <div className="h-10 border-b border-white/5 flex items-center px-6 justify-between bg-[#111]">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                  </div>
+                  <div className="h-4 w-32 bg-white/5 rounded-full border border-white/5" />
+                  <div className="w-6 h-6 rounded-lg bg-brand-orange/20 flex items-center justify-center">
+                    <Zap size={12} className="text-brand-orange" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-12 h-[550px] font-outfit">
+                  <div className="col-span-3 border-r border-white/5 p-6 text-left space-y-10 hidden md:block bg-black/40">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                        <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">Live Room</span>
+                      </div>
+                      <div className="h-10 w-full bg-brand-orange/10 rounded-xl border border-brand-orange/20 flex items-center px-4">
+                        <div className="h-2 w-16 bg-brand-orange/40 rounded" />
+                      </div>
+                    </div>
+                    <div className="space-y-4 pt-4 border-t border-white/5">
+                      <p className="text-[7px] font-black text-white/20 uppercase tracking-[0.3em]">24h Expiry</p>
+                      <p className="text-lg font-mono font-bold text-sky-400">23:54:12</p>
+                    </div>
+                    <div className="mt-20 pt-8 border-t border-white/5">
+                      <div className="h-2 w-12 bg-white/10 rounded mb-4" />
+                      <div className="h-20 w-full bg-gradient-to-br from-white/5 to-transparent rounded-2xl border border-white/5 p-4">
+                        <div className="h-1.5 w-10 bg-brand-orange/40 rounded mb-2" />
+                        <div className="h-3 w-16 bg-white/10 rounded" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-12 md:col-span-9 p-8 bg-[#0a0a0a] relative">
+                    <div className="flex justify-between items-center mb-10">
+                      <div className="h-10 w-48 bg-white/5 rounded-xl border border-white/5 flex items-center px-5 gap-3">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                        <div className="h-2 w-24 bg-white/20 rounded" />
+                      </div>
+                      <div className="h-10 px-6 bg-brand-orange text-black rounded-xl flex items-center font-black text-[10px] uppercase tracking-wider shadow-glow">
+                        Share link
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[320px] overflow-hidden">
+                      <motion.div
+                        animate={{ borderColor: ['rgba(251,146,60,0.1)', 'rgba(251,146,60,0.4)', 'rgba(251,146,60,0.1)'] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="p-6 bg-brand-orange/5 rounded-[2rem] border border-brand-orange/20 flex flex-col items-center justify-center gap-4 text-center"
+                      >
+                        <div className="w-12 h-12 bg-brand-orange/20 rounded-2xl flex items-center justify-center text-brand-orange">
+                          <Share2 size={24} className="animate-pulse" />
+                        </div>
+                        <div className="w-full max-w-[140px] h-2 bg-white/5 rounded-full overflow-hidden">
+                          <motion.div
+                            animate={{ width: ['0%', '100%'] }}
+                            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                            className="h-full bg-brand-orange shadow-[0_0_10px_rgba(251,146,60,0.5)]"
+                          />
+                        </div>
+                        <p className="text-[9px] font-black text-brand-orange/60 uppercase tracking-[0.3em]">Uploading...</p>
+                      </motion.div>
+
+                      {[
+                        { icon: <Zap size={16} />, title: 'Final_Design_V2.pdf', desc: 'Uploaded 2m ago', color: 'text-brand-orange' },
+                        { icon: <Shield size={16} />, title: 'Meeting_Notes.txt', desc: 'Securely shared', color: 'text-amber-400' },
+                        { icon: <Smartphone size={16} />, title: 'Mockup_mobile.png', desc: 'Shared by Peer', color: 'text-orange-300' }
+                      ].map((item, i) => (
+                        <div
+                          key={i}
+                          className="p-6 bg-white/5 rounded-[2rem] border border-white/10 flex flex-col gap-4 text-left group hover:border-brand-orange/30 transition-all duration-500"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className={`w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center ${item.color}`}>
+                              {item.icon}
+                            </div>
+                            <div className="h-1 w-10 bg-white/5 rounded-full" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="text-[10px] font-black text-white uppercase tracking-widest truncate">{item.title}</h4>
+                            <p className="text-[10px] text-white/40 font-medium">{item.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="absolute bottom-6 left-8 right-8 flex gap-4">
+                      <div className="flex-1 h-14 bg-white/5 rounded-2xl border border-white/10 flex items-center px-6 backdrop-blur-xl">
+                        <div className="h-2 w-40 bg-white/10 rounded animate-pulse" />
+                      </div>
+                      <div className="w-14 h-14 bg-brand-orange text-black rounded-2xl flex items-center justify-center shadow-glow">
+                        <Send size={20} className="stroke-[3]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
-        </motion.div>
+        </section>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mb-24"
-        >
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-            How It Works
-          </h2>
+        {/* Powerful Features */}
+        <section id="features" className="py-32 px-6 relative overflow-hidden scroll-mt-32">
+          <div className="max-w-7xl mx-auto text-center mb-24 font-outfit">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase text-white">Why Mitraa?</h2>
+            <p className="text-white/40 max-w-xl mx-auto font-sans">No accounts. No trackers. Just fast sharing.</p>
+          </div>
 
-          <div className="relative">
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-sky-200 via-cyan-200 to-blue-200 -translate-y-1/2 hidden md:block" />
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Zap size={24} />,
+                title: "One-click rooms",
+                desc: "Generate a room instantly without filling out any forms or signing up."
+              },
+              {
+                icon: <Clock size={24} />,
+                title: "Auto-cleanup",
+                desc: "Everything you share is temporary. Files and rooms are deleted permanently after 24 hours."
+              },
+              {
+                icon: <Share2 size={24} />,
+                title: "Real-time sync",
+                desc: "Your friends see your files as soon as you drop them. No refreshing required."
+              }
+            ].map((feature, i) => (
+              <div key={i} className="group p-10 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-brand-orange/30 transition-all duration-500 shadow-2xl font-outfit">
+                <div className="w-14 h-14 bg-brand-orange/10 rounded-2xl mb-6 flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-black transition-all duration-500">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-4 uppercase text-white">{feature.title}</h3>
+                <p className="text-white/40 text-sm leading-relaxed font-sans">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-            <div className="grid md:grid-cols-3 gap-8 relative">
-              {[
-                {
-                  step: "01",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  ),
-                  action: "Create",
-                  detail: "Click to generate a unique room instantly"
-                },
-                {
-                  step: "02",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  ),
-                  action: "Upload",
-                  detail: "Drop your files, paste text, or add links"
-                },
-                {
-                  step: "03",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                    </svg>
-                  ),
-                  action: "Share",
-                  detail: "Copy the link and share with anyone"
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.9 + index * 0.2 }}
-                  className="relative"
-                >
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                    {item.step}
-                  </div>
+        {/* Discovery Section Integration */}
+        <section id="nearby" className="py-20 px-6 relative border-y border-white/5 bg-white/[0.01]">
+          <div className="max-w-7xl mx-auto">
+            <NearbyRooms />
+          </div>
+        </section>
 
-                  <div className="group relative pt-12 pb-8 px-6 bg-white/70 backdrop-blur-sm rounded-3xl hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-2">
-                    <motion.div
-                      animate={{
-                        y: [0, -10, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: index * 0.3
-                      }}
-                      className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-sky-100 to-cyan-100 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                    >
-                      <div className="text-sky-600">
-                        {item.icon}
-                      </div>
-                    </motion.div>
-
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">{item.action}</h3>
-                    <p className="text-gray-600 text-center">{item.detail}</p>
-
-                    {index < 2 && (
-                      <div className="hidden md:block absolute top-1/2 -right-4 text-sky-300">
-                        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+        {/* Footer / CTA Section */}
+        <section id="safety" className="py-32 px-6 relative font-outfit">
+          <div className="max-w-4xl mx-auto bg-brand-orange rounded-[3rem] p-16 text-center shadow-glow-lg text-black relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <Globe size={120} />
             </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="text-center"
-        >
-          <div className="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-500 rounded-3xl p-12 shadow-xl">
-            <h2 className="text-4xl font-bold text-white mb-6">Ready to Share Instantly?</h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands who trust Mitraa for fast, secure, and temporary file sharing
+            <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase">Start sharing now</h2>
+            <p className="text-black/60 text-lg mb-12 font-bold max-w-lg mx-auto leading-relaxed font-sans">
+              Create your first room and send a file in seconds. Simple, private, and fast.
             </p>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block"
+            <button
+              onClick={() => document.getElementById('app-main')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-black text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-transform"
             >
-              <CreateRoomButton />
-            </motion.div>
+              Get started
+            </button>
           </div>
-        </motion.div>
-      </main>
 
+          <footer className="mt-32 max-w-7xl mx-auto border-t border-white/5 pt-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white/20 text-[10px] font-black uppercase tracking-[0.5em]">
+            <span>&copy; 2026 Mitraa &bull; Built for privacy</span>
+            <span>Created by Shivam Pawar &bull; DYP student project</span>
+          </footer>
+        </section>
+      </main>
     </div>
   )
 }

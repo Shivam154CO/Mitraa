@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { Lock } from "lucide-react"
 import type { Room } from "@/lib/types"
 import ShareModal from "./ShareModal"
 
@@ -69,27 +70,33 @@ export default function RoomHeader({ room }: RoomHeaderProps) {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="py-4 shadow-sm"
+        className="py-4 shadow-sm bg-white"
       >
         <div className="max-w-7xl px-4 mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 relative">
+                <img src="/favicon.png" alt="Mitraa Logo" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h1 className="text-xl font-semibold bg-gradient-to-r from-sky-700 to-blue-700 bg-clip-text text-transparent">
-                    Room {room.id.toUpperCase()}
-                  </h1>
-                  {isHost && (
-                    <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-purple-200">
-                      Host
-                    </span>
-                  )}
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <div className="absolute inset-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
                 </div>
-                <p className="text-sm text-sky-600">Expires in {timeLeft}</p>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h1 className="text-xl font-semibold bg-gradient-to-r from-sky-700 to-blue-700 bg-clip-text text-transparent flex items-center gap-2">
+                      Room {room.id.toUpperCase()}
+                      {room.isPrivate && <Lock size={16} className="text-amber-500" />}
+                    </h1>
+                    {isHost && (
+                      <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-purple-200">
+                        Host
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-sky-600">Expires in {timeLeft}</p>
+                </div>
               </div>
             </div>
           </div>

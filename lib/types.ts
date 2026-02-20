@@ -2,6 +2,8 @@ export interface Room {
   id: string
   createdAt: number
   hostKey?: string
+  isPrivate?: boolean
+  password?: string
 }
 
 export interface Message {

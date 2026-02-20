@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import FileUpload from "./FileUpload"
@@ -55,10 +54,10 @@ export default function ContentInput({ onSubmit }: ContentInputProps) {
         onSubmit(url, fileType, file.name, file.size, file.type)
         setShowFileUpload(false)
       } else {
-        console.error("Failed to upload file:", await response.text())
+        console.error("Failed to upload file")
       }
     } catch (error) {
-      console.error("Failed to upload file:", error)
+      console.error("Failed to upload file")
     } finally {
       setIsUploading(false)
     }

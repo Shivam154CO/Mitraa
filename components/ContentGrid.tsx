@@ -11,21 +11,21 @@ interface ContentGridProps {
 export default function ContentGrid({ items, loading = false }: ContentGridProps) {
   const validItems = Array.isArray(items)
     ? items.filter((item) => {
-        return (
-          item &&
-          typeof item === "object" &&
-          item.id &&
-          item.userId &&
-          item.content &&
-          item.type &&
-          typeof item.createdAt === "number"
-        )
-      })
+      return (
+        item &&
+        typeof item === "object" &&
+        item.id &&
+        item.userId &&
+        item.content &&
+        item.type &&
+        typeof item.createdAt === "number"
+      )
+    })
     : []
 
   if (validItems.length === 0 && !loading) {
     return (
-      <div className="flex-1 p-6 flex items-center justify-center bg-gradient-to-br ">
+      <div className="flex-1 p-6 flex items-center justify-center">
         <div className="text-center text-gray-600 max-w-md">
           <svg className="w-16 h-16 mx-auto mb-4 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -45,7 +45,7 @@ export default function ContentGrid({ items, loading = false }: ContentGridProps
   }
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-br ">
+    <div className="flex-1 p-6 overflow-y-auto">
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
         {validItems.map((item) => (
           <div key={item.id} className="break-inside-avoid mb-4">

@@ -168,8 +168,19 @@ export default function ContentCard({ item }: ContentCardProps) {
         )}
 
         {(item.type === "pdf" || item.type === "file") && (
-          <div className="flex flex-col items-center justify-center space-y-2 py-2">
-            {getFileIcon()}
+          <div className="flex flex-col items-center justify-center space-y-4 py-2 w-full">
+            {item.type === "pdf" ? (
+              <div className="w-full h-48 border border-orange-100 rounded-lg overflow-hidden relative group">
+                <iframe
+                  src={`${item.content}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full h-full border-none"
+                  title="PDF Preview"
+                />
+                <div className="absolute inset-0 bg-transparent cursor-pointer" onClick={downloadFile} />
+              </div>
+            ) : (
+              getFileIcon()
+            )}
             <div className="text-center">
               <p className="font-medium text-gray-800 text-sm break-words">
                 {item.fileName || `File-${item.id.slice(0, 6)}`}

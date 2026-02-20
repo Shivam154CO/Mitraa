@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
         })
 
         const allRooms = await Promise.all(roomPromises)
-        const activeRooms = allRooms.filter((r) => r !== null)
+        const activeRooms = allRooms
+            .filter((r) => r !== null)
+            .map(r => {
+                const { password, ...roomData } = r!
+                return roomData
+            })
 
         console.log(`📡 Found ${activeRooms.length} active nearby rooms`)
 
