@@ -56,9 +56,8 @@ export default function FileUpload({ onUpload, disabled }: FileUploadProps) {
       />
       <motion.div
         onDragEnter={handleDrag}
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-          dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
-        }`}
+        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+          }`}
       >
         <div
           className="flex flex-col items-center justify-center space-y-2"
@@ -79,7 +78,7 @@ export default function FileUpload({ onUpload, disabled }: FileUploadProps) {
           <div className="text-sm font-medium text-gray-700">
             {dragActive ? "Drop file here" : "Click to upload or drag and drop"}
           </div>
-          <p className="text-xs text-gray-500">Images, PDFs, documents, and other files (max 50MB)</p>
+          <p className="text-xs text-gray-500">Images, PDFs, documents, and other files (max 100MB)</p>
         </div>
       </motion.div>
     </div>

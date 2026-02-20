@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   generator: 'Next.js',
   applicationName: 'Mitraa',
   authors: [{ name: 'Shivam Pawar', url: 'https://developer-shivam.vercel.app/' }],
-  keywords: ['file sharing', 'text sharing', 'Mitraa', 'Shivam Pawar', 'instant sharing', 'no registration', 'secure file transfer','Mitra by shivam pawar','shivam pawar new project','mitraa shivam pawar','shivam pawar file sharing website'],
+  keywords: ['file sharing', 'text sharing', 'Mitraa', 'Shivam Pawar', 'instant sharing', 'no registration', 'secure file transfer', 'Mitra by shivam pawar', 'shivam pawar new project', 'mitraa shivam pawar', 'shivam pawar file sharing website'],
   creator: 'Shivam Pawar',
   publisher: 'Shivam Pawar',
 
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mitraa - Share anything instantly',
     description: 'One-click sharing of files and text. Fast, secure, and login-free.',
-    creator: '@ShivamPawarDev', 
+    creator: '@ShivamPawarDev',
     images: ['/favicon.png'],
   },
 
@@ -53,13 +53,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" type="image/png" />
         <link rel="apple-touch-icon" href="/favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   )
 }

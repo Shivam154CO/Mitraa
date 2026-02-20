@@ -1,216 +1,189 @@
+// /lib/storage.ts - FIXED VERSION
 import type { Room, Message } from "@/lib/types"
-import { memoryStore } from "./memory-store"
+import { Redis } from "@upstash/redis"
 
-class StorageManager {
-  private redis: any = null
-  private useRedis = false
-  private initialized = false
+let redisInstance: Redis | null = null
 
-  private async initialize() {
-    if (this.initialized) return
+function getRedis(): Redis {
+  if (redisInstance) return redisInstance
 
-    try {
-      if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-        const { Redis } = await import("@upstash/redis")
-        this.redis = new Redis({
-          url: process.env.UPSTASH_REDIS_REST_URL,
-          token: process.env.UPSTASH_REDIS_REST_TOKEN,
-        })
+  console.log("🔄 Initializing Redis connection...")
 
-        await this.redis.ping()
-        this.useRedis = true
-      } else {
-        console.log("Using memory store")
-      }
-    } catch (error) {
-      console.log("Redis connection failed:", error)
-      this.useRedis = false
-    }
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
 
-    this.initialized = true
+  if (!url || !token) {
+    throw new Error("Redis environment variables missing. Check .env.local")
   }
 
-  async clearCorruptedData(): Promise<void> {
-    await this.initialize()
-    
-    if (this.useRedis && this.redis) {
-      try {
-        const keys = await this.redis.keys("*")
-        
-        for (const key of keys) {
-          try {
-            const data = await this.redis.get(key)
-            JSON.parse(data)
-          } catch (error) {
-            await this.redis.del(key)
-          }
-        }
-      } catch (error) {
-        console.error("Error clearing corrupted data:", error)
-      }
-    }
-  }
-
-  private safeJsonParse(data: any): any {
-    try {
-      if (typeof data === "object" && data !== null) {
-        return data
-      }
-
-      if (typeof data === "string") {
-        return JSON.parse(data)
-      }
-
-      console.error("Unexpected data type:", typeof data, data)
-      return null
-    } catch (error) {
-      console.error("JSON parse error:", error, "Data:", data)
-      return null
-    }
-  }
-
-  private safeJsonStringify(data: any): string {
-    try {
-      return JSON.stringify(data)
-    } catch (error) {
-      console.error("JSON stringify error:", error)
-      throw error
-    }
-  }
-
-  async setRoom(roomId: string, room: Room): Promise<void> {
-    await this.initialize()
-
-    if (this.useRedis && this.redis) {
-      try {
-        const jsonString = this.safeJsonStringify(room)
-        await this.redis.setex(`room:${roomId}`, 24 * 60 * 60, jsonString)
-        return
-      } catch (error) {
-        console.error("Redis setRoom error:", error)
-        this.useRedis = false
-      }
-    }
-
-    memoryStore.setRoom(roomId, room)
-  }
-
-  async getRoom(roomId: string): Promise<Room | null> {
-    await this.initialize()
-
-    if (this.useRedis && this.redis) {
-      try {
-        const data = await this.redis.get(`room:${roomId}`)
-        if (data) {
-          const parsed = this.safeJsonParse(data)
-          if (parsed) {
-            return parsed as Room
-          } else {
-            await this.redis.del(`room:${roomId}`)
-          }
-        }
-      } catch (error) {
-        console.error("Redis getRoom error:", error)
-        this.useRedis = false
-      }
-    }
-
-    const room = memoryStore.getRoom(roomId)
-    return room
-  }
-
-  async roomExists(roomId: string): Promise<boolean> {
-    await this.initialize()
-
-    if (this.useRedis && this.redis) {
-      try {
-        const exists = await this.redis.exists(`room:${roomId}`)
-        return exists > 0
-      } catch (error) {
-        console.error("Redis roomExists error:", error)
-        this.useRedis = false
-      }
-    }
-
-    const exists = memoryStore.roomExists(roomId)
-    return exists
-  }
-
-  async addMessage(roomId: string, message: Message): Promise<void> {
-    await this.initialize()
-
-    const roomExists = await this.roomExists(roomId)
-    if (!roomExists) {
-      console.error(`Cannot add message: Room ${roomId} does not exist`)
-      throw new Error(`Room ${roomId} does not exist`)
-    }
-
-    if (this.useRedis && this.redis) {
-      try {
-        const jsonString = this.safeJsonStringify(message)
-        await this.redis.rpush(`messages:${roomId}`, jsonString)
-        await this.redis.expire(`messages:${roomId}`, 24 * 60 * 60)
-        return
-      } catch (error) {
-        console.error("Redis addMessage error:", error)
-        this.useRedis = false
-      }
-    }
-
-    memoryStore.addMessage(roomId, message)
-  }
-
-  async getMessages(roomId: string): Promise<Message[]> {
-    await this.initialize()
-
-    const roomExists = await this.roomExists(roomId)
-    if (!roomExists) {
-      console.error(`Cannot get messages: Room ${roomId} does not exist`)
-      return []
-    }
-
-    if (this.useRedis && this.redis) {
-      try {
-        const data = await this.redis.lrange(`messages:${roomId}`, 0, -1)
-        const messages = data.map((item: string) => {
-          try {
-            return JSON.parse(item)
-          } catch (error) {
-            console.error("Error parsing message:", error)
-            return null
-          }
-        }).filter((msg: Message | null) => msg !== null) as Message[]
-        
-        return messages
-      } catch (error) {
-        console.error("Redis getMessages error:", error)
-        this.useRedis = false
-      }
-    }
-
-    const messages = memoryStore.getMessages(roomId)
-    return messages
-  }
-
-  async getAllRooms(): Promise<string[]> {
-    await this.initialize()
-
-    if (this.useRedis && this.redis) {
-      try {
-        const keys = await this.redis.keys("room:*")
-        return keys.map((key: string) => key.replace("room:", ""))
-      } catch (error) {
-        console.error("Redis getAllRooms error:", error)
-        this.useRedis = false
-      }
-    }
-
-    return memoryStore.getAllRooms()
-  }
-
-  getStorageType(): string {
-    return this.useRedis ? "Redis" : "Memory"
+  try {
+    redisInstance = new Redis({ url, token })
+    console.log("✅ Redis connected successfully")
+    return redisInstance
+  } catch (error) {
+    console.error("❌ Redis connection failed:", error)
+    throw error
   }
 }
 
-export const storage = new StorageManager()
+class RedisStorage {
+  private ttl = 24 * 60 * 60
+
+  async setRoom(roomId: string, room: Room): Promise<void> {
+    const normalizedId = roomId.toLowerCase()
+    console.log(`[Redis] Storing room: ${normalizedId}`)
+    const redis = getRedis()
+
+    // Ensure we store STRINGIFIED JSON
+    const roomJson = JSON.stringify(room)
+    console.log(`Room JSON length: ${roomJson.length} chars`)
+
+    await redis.setex(`room:${normalizedId}`, this.ttl, roomJson)
+    console.log(`✅ Room ${normalizedId} stored`)
+  }
+
+  async getRoom(roomId: string): Promise<Room | null> {
+    const normalizedId = roomId.toLowerCase()
+    console.log(`[Redis] Getting room: ${normalizedId}`)
+    const redis = getRedis()
+
+    try {
+      const data = await redis.get(`room:${roomId}`)
+
+      if (!data) {
+        console.log(`Room ${normalizedId} not found in Redis`)
+        return null
+      }
+
+      console.log(`Data type from Redis: ${typeof data}, Value: ${String(data).substring(0, 100)}...`)
+
+      // Handle different data types from Redis
+      let parsed: any
+
+      if (typeof data === 'string') {
+        // It's already a string, parse it
+        parsed = JSON.parse(data)
+      } else if (typeof data === 'object' && data !== null) {
+        // Redis might return an object directly
+        // Check if it's already a Room object
+        if ('id' in data && 'createdAt' in data) {
+          return data as Room
+        }
+        // Otherwise stringify and parse
+        parsed = JSON.parse(JSON.stringify(data))
+      } else {
+        // Unknown type
+        console.error(`Unexpected data type from Redis: ${typeof data}`, data)
+        return null
+      }
+
+      // Validate the parsed object
+      if (parsed && parsed.id && typeof parsed.createdAt === 'number') {
+        console.log(`✅ Successfully parsed room ${roomId}`)
+
+        // Refresh TTL on successful retrieval
+        await this.refreshTTL(normalizedId)
+
+        return parsed as Room
+      } else {
+        console.error(`Invalid room data for ${roomId}:`, parsed)
+        return null
+      }
+
+    } catch (error) {
+      console.error(`❌ Failed to parse room ${roomId}:`, error)
+      return null
+    }
+  }
+
+  async refreshTTL(roomId: string): Promise<void> {
+    const normalizedId = roomId.toLowerCase()
+    const redis = getRedis()
+    await redis.expire(`room:${normalizedId}`, this.ttl)
+    await redis.expire(`messages:${normalizedId}`, this.ttl)
+    console.log(`🔄 TTL refreshed for room and messages: ${normalizedId}`)
+  }
+
+  async roomExists(roomId: string): Promise<boolean> {
+    const redis = getRedis()
+    const normalizedId = roomId.toLowerCase()
+    const exists = await redis.exists(`room:${normalizedId}`)
+    console.log(`[Redis] Room ${normalizedId} exists: ${exists === 1}`)
+    return exists === 1
+  }
+
+  async addMessage(roomId: string, message: Message): Promise<void> {
+    const normalizedId = roomId.toLowerCase()
+    console.log(`[Redis] Adding message to: ${normalizedId}`)
+    const redis = getRedis()
+
+    // Stringify the message
+    const messageJson = JSON.stringify(message)
+    await redis.rpush(`messages:${normalizedId}`, messageJson)
+    await redis.expire(`messages:${normalizedId}`, this.ttl)
+
+    console.log(`✅ Message added to room ${normalizedId}`)
+
+    // Refresh room TTL when a message is added
+    await this.refreshTTL(normalizedId)
+  }
+
+  async getMessages(roomId: string): Promise<Message[]> {
+    const normalizedId = roomId.toLowerCase()
+    console.log(`[Redis] Getting messages for: ${normalizedId}`)
+    const redis = getRedis()
+
+    try {
+      const data = await redis.lrange(`messages:${normalizedId}`, 0, -1)
+
+      if (!data || !Array.isArray(data)) {
+        console.log(`No messages found for room ${normalizedId}`)
+        return []
+      }
+
+      const messages: Message[] = []
+
+      for (const item of data) {
+        try {
+          if (typeof item === 'string') {
+            messages.push(JSON.parse(item))
+          } else if (typeof item === 'object' && item !== null) {
+            // Already an object
+            messages.push(item as Message)
+          }
+        } catch (parseError) {
+          console.error(`Failed to parse message:`, item, parseError)
+        }
+      }
+
+      console.log(`✅ Retrieved ${messages.length} messages for ${normalizedId}`)
+      return messages
+
+    } catch (error) {
+      console.error(`❌ Failed to get messages for ${normalizedId}:`, error)
+      return []
+    }
+  }
+
+  async getAllRooms(): Promise<string[]> {
+    const redis = getRedis()
+    const keys = await redis.keys("room:*")
+    return keys.map(key => key.replace("room:", ""))
+  }
+
+  getStorageType(): string {
+    return "Redis"
+  }
+
+  // Debug: Clear test data
+  async clearTestData(): Promise<void> {
+    const redis = getRedis()
+    const keys = await redis.keys("test-*")
+    if (keys.length > 0) {
+      await redis.del(...keys)
+      console.log(`Cleared ${keys.length} test keys`)
+    }
+  }
+}
+
+export const storage = new RedisStorage()

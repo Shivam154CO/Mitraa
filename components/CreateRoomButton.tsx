@@ -11,6 +11,7 @@ export default function CreateRoomButton() {
   const router = useRouter()
 
   const createRoom = async () => {
+    console.log("🔘 Create Room button clicked")
     setIsCreating(true)
     setError(null)
 
@@ -51,7 +52,7 @@ export default function CreateRoomButton() {
     <div className="space-y-4">
       <motion.button
         onClick={createRoom}
-        disabled={isCreating} 
+        disabled={isCreating}
         whileTap={{ scale: 0.98 }}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}

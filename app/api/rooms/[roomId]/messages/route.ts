@@ -1,7 +1,10 @@
+// /app/api/rooms/[roomId]/messages/route.ts
 import { NextResponse } from "next/server"
 import { storage } from "@/lib/storage"
 import { generateId, generateUserId } from "@/lib/utils"
 import type { Message } from "@/lib/types"
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request, { params }: { params: { roomId: string } }) {
   try {

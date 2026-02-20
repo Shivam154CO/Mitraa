@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "app/api/uploadthing/route.ts": {
+      "maxRequestSize": "100mb"
+    },
+    "app/api/rooms/[roomId]/messages/route.ts": {
+      "maxRequestSize": "100mb"
+    }
+  }
+}

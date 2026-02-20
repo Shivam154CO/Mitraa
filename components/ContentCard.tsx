@@ -174,7 +174,13 @@ export default function ContentCard({ item }: ContentCardProps) {
               <p className="font-medium text-gray-800 text-sm break-words">
                 {item.fileName || `File-${item.id.slice(0, 6)}`}
               </p>
-              {item.fileSize && <p className="text-xs text-gray-600">{(item.fileSize / 1024).toFixed(1)} KB</p>}
+              {item.fileSize && (
+                <p className="text-xs text-gray-600">
+                  {item.fileSize > 1024 * 1024
+                    ? `${(item.fileSize / (1024 * 1024)).toFixed(1)} MB`
+                    : `${(item.fileSize / 1024).toFixed(1)} KB`}
+                </p>
+              )}
             </div>
           </div>
         )}
