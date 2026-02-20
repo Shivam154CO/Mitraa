@@ -1,6 +1,7 @@
 export interface Room {
   id: string
   createdAt: number
+  hostKey?: string
 }
 
 export interface Message {

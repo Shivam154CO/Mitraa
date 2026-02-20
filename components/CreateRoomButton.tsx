@@ -26,6 +26,12 @@ export default function CreateRoomButton() {
 
       if (response.ok) {
         const data = await response.json()
+
+        // Save host key to identify the creator
+        if (data.hostKey) {
+          localStorage.setItem(`hostKey_${data.roomId}`, data.hostKey)
+        }
+
         await new Promise((resolve) => setTimeout(resolve, 200))
         router.push(`/${data.roomId}`)
       } else {

@@ -9,6 +9,14 @@ interface RoomHeaderProps {
 export default function RoomHeader({ room }: RoomHeaderProps) {
   const [timeLeft, setTimeLeft] = useState("")
   const [copied, setCopied] = useState(false)
+  const [isHost, setIsHost] = useState(false)
+
+  useEffect(() => {
+    const savedHostKey = localStorage.getItem(`hostKey_${room.id}`)
+    if (savedHostKey) {
+      setIsHost(true)
+    }
+  }, [room.id])
 
   useEffect(() => {
     const updateTimeLeft = () => {
@@ -53,11 +61,24 @@ export default function RoomHeader({ room }: RoomHeaderProps) {
     >
       <div className="max-w-7xl px-4 mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <div>
-            <h1 className="text-xl font-semibold bg-gradient-to-r from-sky-700 to-blue-700 bg-clip-text text-transparent">
-              Room {room.id}
-            </h1>
-            <p className="text-sm text-sky-600">Expires in {timeLeft}</p>
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-xl font-semibold bg-gradient-to-r from-sky-700 to-blue-700 bg-clip-text text-transparent">
+                  Room {room.id.toUpperCase()}
+                </h1>
+                {isHost && (
+                  <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-purple-200">
+                    Host
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-sky-600">Expires in {timeLeft}</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-2">

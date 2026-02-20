@@ -31,3 +31,31 @@ export async function GET(request: Request, { params }: { params: { roomId: stri
     return NextResponse.json({ error: "Failed to get room" }, { status: 500 })
   }
 }
+
+export async function DELETE(request: Request, { params }: { params: { roomId: string } }) {
+  try {
+    const { roomId } = params
+    const hostKey = request.headers.get("x-host-key")
+
+    if (!roomId || !hostKey) {
+      return NextResponse.json({ error: "Room ID and Host Key are required" }, { status: 400 })
+    }
+
+    const room = await storage.getRoom(roomId)
+
+    if (!room) {
+      return NextResponse.json({ error: "Room not found" }, { status: 404 })
+    }
+
+    if (room.hostKey !== hostKey) {
+      return NextResponse.json({ error: "Unauthorized: Invalid Host Key" }, { status: 403 })
+    }
+
+    await storage.deleteRoom(roomId)
+
+    return NextResponse.json({ success: true, message: "Room destroyed successfully" })
+  } catch (error) {
+    console.error(`Failed to delete room ${params?.roomId}:`, error)
+    return NextResponse.json({ error: "Failed to delete room" }, { status: 500 })
+  }
+}

@@ -31,18 +31,20 @@ export async function POST() {
     console.log(`Room collision check: ${exists}`)
 
     const finalRoomId = exists ? `${roomId}-${Math.floor(Math.random() * 1000)}` : roomId
+    const hostKey = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
     console.log(`Final roomId: ${finalRoomId}`)
 
     const room = {
       id: finalRoomId,
       createdAt: Date.now(),
+      hostKey: hostKey
     }
 
     console.log("Storing room in storage...")
     await storage.setRoom(finalRoomId, room)
     console.log(`✅ successfully created and stored room: ${finalRoomId}`)
 
-    return NextResponse.json({ roomId: finalRoomId })
+    return NextResponse.json({ roomId: finalRoomId, hostKey })
   } catch (error) {
     console.error("❌ CRITICAL ERROR IN ROOM CREATION:", error)
     return NextResponse.json(

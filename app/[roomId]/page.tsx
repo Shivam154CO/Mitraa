@@ -13,14 +13,14 @@ export default function RoomPage() {
   const params = useParams()
   const router = useRouter()
   const roomId = params.roomId as string
-  
+
   // 🚨 DEBUG: Log what we receive from useParams
   console.log("=== ROOM PAGE RENDER ===")
   console.log("params:", params)
   console.log("roomId from params:", roomId)
   console.log("typeof roomId:", typeof roomId)
   console.log("roomId length:", roomId?.length)
-  
+
   // 🚨 CRITICAL FIX: Check if roomId is truly invalid
   if (!roomId || roomId === "undefined" || roomId === "null" || roomId.length < 3) {
     console.error("❌ Invalid room ID detected:", {
@@ -29,20 +29,20 @@ export default function RoomPage() {
       length: roomId?.length,
       params: JSON.stringify(params)
     })
-    
+
     // Wait a moment to see if params update (Next.js hydration)
     const [showError, setShowError] = useState(false)
-    
+
     useEffect(() => {
       const timer = setTimeout(() => {
         if (!roomId || roomId === "undefined") {
           setShowError(true)
         }
       }, 1000)
-      
+
       return () => clearTimeout(timer)
     }, [roomId])
-    
+
     if (showError) {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -69,7 +69,7 @@ export default function RoomPage() {
         </div>
       )
     }
-    
+
     // Show loading while waiting for params
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -81,12 +81,14 @@ export default function RoomPage() {
       </div>
     )
   }
-  
+
   // Valid roomId, continue with normal flow
   const [room, setRoom] = useState<Room | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [contentLoading, setContentLoading] = useState(false)
+  const [isHost, setIsHost] = useState(false)
+  const [isDestroying, setIsDestroying] = useState(false)
 
   const { messages, setMessages, addMessage } = useRoomStore()
 
@@ -131,7 +133,7 @@ export default function RoomPage() {
           })
           setRoom(roomData)
           setError(null)
-          
+
           // Also set initial messages
           if (roomData.messages && Array.isArray(roomData.messages)) {
             setMessages(roomData.messages)
@@ -140,6 +142,12 @@ export default function RoomPage() {
           const errorData = await response.json().catch(() => ({ error: "Room not found" }))
           console.error("❌ Room not found:", errorData)
           setError(errorData.error || "Room not found or has expired")
+        }
+
+        // Check if current user is the host
+        const savedHostKey = localStorage.getItem(`hostKey_${roomId}`)
+        if (savedHostKey) {
+          setIsHost(true)
         }
       } catch (err) {
         console.error("❌ Error fetching room:", err)
@@ -225,7 +233,7 @@ export default function RoomPage() {
       alert("Invalid room. Please refresh the page.")
       return
     }
-    
+
     try {
       console.log(`📤 Sending ${type} content to room ${roomId}`)
       const response = await fetch(`/api/rooms/${roomId}/messages`, {
@@ -259,6 +267,37 @@ export default function RoomPage() {
 
   const handleCreateNewRoom = () => {
     router.push("/")
+  }
+
+  const handleDestroyRoom = async () => {
+    if (!window.confirm("ARE YOU SURE? This will permanently delete this room and all its content for everyone!")) {
+      return
+    }
+
+    const hostKey = localStorage.getItem(`hostKey_${roomId}`)
+    if (!hostKey) return
+
+    setIsDestroying(true)
+    try {
+      const response = await fetch(`/api/rooms/${roomId}`, {
+        method: "DELETE",
+        headers: {
+          "x-host-key": hostKey
+        }
+      })
+
+      if (response.ok) {
+        localStorage.removeItem(`hostKey_${roomId}`)
+        router.push("/")
+      } else {
+        alert("Failed to destroy room")
+      }
+    } catch (err) {
+      console.error("Error destroying room:", err)
+      alert("Network error while destroying room")
+    } finally {
+      setIsDestroying(false)
+    }
   }
 
   if (loading) {
@@ -316,6 +355,21 @@ export default function RoomPage() {
 
         <div className="border-t bg-white p-4">
           <ContentInput onSubmit={handleSubmitContent} />
+
+          {isHost && (
+            <div className="mt-4 pt-4 border-t flex justify-center">
+              <button
+                onClick={handleDestroyRoom}
+                disabled={isDestroying}
+                className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors flex items-center space-x-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span>{isDestroying ? "Destroying..." : "Destroy Room Permanently (Host Only)"}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

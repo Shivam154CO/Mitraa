@@ -175,6 +175,14 @@ class RedisStorage {
     return "Redis"
   }
 
+  async deleteRoom(roomId: string): Promise<void> {
+    const normalizedId = roomId.toLowerCase()
+    const redis = getRedis()
+    await redis.del(`room:${normalizedId}`)
+    await redis.del(`messages:${normalizedId}`)
+    console.log(`🗑️ Room ${normalizedId} and its messages have been deleted`)
+  }
+
   // Debug: Clear test data
   async clearTestData(): Promise<void> {
     const redis = getRedis()
