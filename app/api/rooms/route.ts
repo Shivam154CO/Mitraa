@@ -1,5 +1,4 @@
-// /app/api/rooms/route.ts
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { storage } from "@/lib/storage"
 import { generateRoomId } from "@/lib/utils"
 
@@ -20,9 +19,13 @@ export async function GET() {
   }
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     console.log("=== ROOM CREATION REQUEST START ===")
+
+    // Get user IP for proximity discovery
+    const ip = request.headers.get("x-forwarded-for")?.split(',')[0] || "127.0.0.1"
+
     const roomId = generateRoomId()
     console.log(`Generated potential roomId: ${roomId}`)
 
@@ -42,7 +45,11 @@ export async function POST() {
 
     console.log("Storing room in storage...")
     await storage.setRoom(finalRoomId, room)
-    console.log(`✅ successfully created and stored room: ${finalRoomId}`)
+
+    // Link room to IP for discovery
+    await storage.addRoomToIp(ip, finalRoomId)
+
+    console.log(`✅ successfully created room: ${finalRoomId} for IP: ${ip}`)
 
     return NextResponse.json({ roomId: finalRoomId, hostKey })
   } catch (error) {

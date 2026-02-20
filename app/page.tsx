@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import CreateRoomButton from "@/components/CreateRoomButton"
+import NearbyRooms from "@/components/NearbyRooms"
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
@@ -29,11 +30,11 @@ export default function HomePage() {
 
   const installApp = async () => {
     if (!deferredPrompt) return
-    
+
     try {
       deferredPrompt.prompt()
       const choiceResult = await deferredPrompt.userChoice
-      
+
       if (choiceResult.outcome === 'accepted') {
         console.log('App installed')
       } else {
@@ -91,7 +92,7 @@ export default function HomePage() {
                 transition={{ duration: 0.8, type: "spring" }}
                 className="absolute -inset-2 bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 rounded-full opacity-20 blur"
               />
-              
+
               <div className="relative w-14 h-14 bg-gradient-to-br from-sky-500 via-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-sky-500/30 overflow-hidden">
                 <div className="relative w-10 h-10">
                   <Image
@@ -102,7 +103,7 @@ export default function HomePage() {
                     priority
                   />
                 </div>
-                
+
                 <motion.div
                   animate={{
                     y: [0, -3, 0],
@@ -129,10 +130,10 @@ export default function HomePage() {
                   className="absolute bottom-1 left-3 w-1 h-1 bg-white/80 rounded-full"
                 />
               </div>
-              
+
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent rounded-2xl" />
             </div>
-            
+
             <div className="relative">
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -160,7 +161,7 @@ export default function HomePage() {
                   <div className="w-4 h-px bg-gradient-to-r from-cyan-400 to-blue-400" />
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
@@ -229,6 +230,14 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <NearbyRooms />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -313,10 +322,10 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
             How It Works
           </h2>
-          
+
           <div className="relative">
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-sky-200 via-cyan-200 to-blue-200 -translate-y-1/2 hidden md:block" />
-            
+
             <div className="grid md:grid-cols-3 gap-8 relative">
               {[
                 {
@@ -360,7 +369,7 @@ export default function HomePage() {
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
                     {item.step}
                   </div>
-                  
+
                   <div className="group relative pt-12 pb-8 px-6 bg-white/70 backdrop-blur-sm rounded-3xl hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-2">
                     <motion.div
                       animate={{
@@ -378,10 +387,10 @@ export default function HomePage() {
                         {item.icon}
                       </div>
                     </motion.div>
-                    
+
                     <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">{item.action}</h3>
                     <p className="text-gray-600 text-center">{item.detail}</p>
-                    
+
                     {index < 2 && (
                       <div className="hidden md:block absolute top-1/2 -right-4 text-sky-300">
                         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">

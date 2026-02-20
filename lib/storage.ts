@@ -183,6 +183,22 @@ class RedisStorage {
     console.log(`🗑️ Room ${normalizedId} and its messages have been deleted`)
   }
 
+  async addRoomToIp(ip: string, roomId: string): Promise<void> {
+    const redis = getRedis()
+    const key = `ip_rooms:${ip}`
+    await redis.sadd(key, roomId)
+    await redis.expire(key, this.ttl)
+    console.log(`📡 Linked room ${roomId} to IP ${ip}`)
+  }
+
+  async getRoomsByIp(ip: string): Promise<string[]> {
+    const redis = getRedis()
+    const key = `ip_rooms:${ip}`
+    const rooms = await redis.smembers(key)
+    console.log(`📡 Found ${rooms.length} rooms for IP ${ip}`)
+    return rooms
+  }
+
   // Debug: Clear test data
   async clearTestData(): Promise<void> {
     const redis = getRedis()
